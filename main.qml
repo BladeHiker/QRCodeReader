@@ -5,7 +5,8 @@ import Shot 1.0
 Window {
     visible: true
     id: window
-    flags: Qt.Window
+    flags: Qt.Window | Qt.WindowStaysOnTopHint | Qt.WindowTitleHint
+           | Qt.WindowMinMaxButtonsHint | Qt.WindowCloseButtonHint | Qt.WindowSystemMenuHint
     width: 200
     height: 200
     color: "#00000000"
@@ -13,7 +14,6 @@ Window {
     Shot {
         id: shotClass
     }
-
     Rectangle {
         id: shot
         color: "#00000000"
@@ -37,7 +37,7 @@ Window {
             id: btn_shot
             width: 30
             height: 30
-            color: "#b2fcfc"
+            color: btn_mouse.pressed ? "#0078d7" : "#b2fcfc"
             anchors.right: parent.right
             anchors.rightMargin: 0
             anchors.bottom: parent.bottom
@@ -49,6 +49,7 @@ Window {
                 anchors.fill: parent
             }
             MouseArea {
+                id: btn_mouse
                 anchors.fill: parent
                 propagateComposedEvents: true
                 onDoubleClicked: legendView.visible = false
@@ -78,6 +79,27 @@ Window {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 15
+        }
+    }
+    MouseArea {
+        id: dragRegion
+        anchors.fill: parent
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 30
+        property point prePoint: Qt.point(0, 0)
+        property int datX: 0
+        property int datY: 0
+        onPressed: {
+            prePoint = Qt.point(mouseX, mouseY)
+        }
+        onPositionChanged: {
+            if (pressed && !(datX == -1 * (mouseX - prePoint.x)
+                             && datY == -1 * (mouseY - prePoint.y))) {
+                datX = mouseX - prePoint.x
+                datY = mouseY - prePoint.y
+                window.x += datX
+                window.y += datY
+            }
         }
     }
 }
