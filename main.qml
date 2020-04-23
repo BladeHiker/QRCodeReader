@@ -14,6 +14,17 @@ Window {
     Shot {
         id: shotClass
     }
+    function scan() {
+        var s = shotClass.shot(shot.mapToGlobal(0, 0).x,
+                               shot.mapToGlobal(0, 0).y, shot.width,
+                               shot.height)
+        if (s == "")
+            textEdit.text = "识别失败!"
+        else {
+            textEdit.text = s
+        }
+    }
+
     Rectangle {
         id: shot
         color: "#00000000"
@@ -33,6 +44,14 @@ Window {
         anchors.bottomMargin: 0
         anchors.right: parent.right
         anchors.rightMargin: 0
+        focus: true
+        Keys.enabled: true
+        Keys.onPressed: {
+            if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
+                scan()
+            }
+            event.accepted = true
+        }
         Rectangle {
             id: btn_shot
             width: 30
@@ -55,14 +74,7 @@ Window {
                 onDoubleClicked: legendView.visible = false
                 onClicked: {
                     mouse.accepted = true
-                    var s = shotClass.shot(shot.mapToGlobal(0, 0).x,
-                                           shot.mapToGlobal(0, 0).y,
-                                           shot.width, shot.height)
-                    if (s == "")
-                        textEdit.text = "识别失败!"
-                    else {
-                        textEdit.text = s
-                    }
+                    scan()
                 }
             }
         }
@@ -71,6 +83,7 @@ Window {
             id: textEdit
             width: parent.width - 30
             text: "扫描上方的二维码"
+            readOnly: true
             height: 30
             clip: true
             leftPadding: 5
